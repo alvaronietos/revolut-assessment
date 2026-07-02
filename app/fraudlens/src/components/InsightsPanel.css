@@ -1,0 +1,157 @@
+.insights {
+  min-width: 0;
+}
+
+.insights-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-5) var(--sp-6);
+}
+
+@media (max-width: 900px) {
+  .insights-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.insights-cell {
+  min-width: 0;
+}
+
+.insights-note {
+  font-size: 11px;
+  margin-top: var(--sp-2);
+}
+
+/* Corridors */
+.corridor-row {
+  display: grid;
+  grid-template-columns: 92px 1fr 44px 34px;
+  gap: var(--sp-2);
+  align-items: center;
+  font-size: 12px;
+  padding: 3px 0;
+}
+
+.corridor-label {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.corridor-bar {
+  height: 7px;
+  background: var(--surface-2);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.corridor-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 999px;
+}
+
+.corridor-tx {
+  text-align: right;
+  color: var(--text-dim);
+}
+
+.corridor-rate {
+  text-align: right;
+  color: var(--text-dim);
+}
+
+.corridor-rate.hot {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+/* Rule co-occurrence matrix */
+.matrix {
+  display: grid;
+  gap: 2px;
+  margin-top: var(--sp-2);
+}
+
+.matrix-head {
+  font-size: 9.5px;
+  color: var(--text-dim);
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.matrix-rowhead {
+  justify-content: flex-end;
+  padding-right: 4px;
+}
+
+.matrix-cell {
+  aspect-ratio: 1 / 1;
+  border-radius: 3px;
+  background: var(--surface-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.matrix-diag {
+  background: transparent;
+  color: var(--text-dim);
+  font-weight: 600;
+}
+
+/* Coverage */
+.coverage-headline {
+  font-size: 13px;
+  margin: var(--sp-2) 0 var(--sp-3);
+  line-height: 1.5;
+}
+
+.coverage-headline .hot {
+  color: var(--danger);
+  font-weight: 700;
+}
+
+.coverage-bar {
+  height: 14px;
+  background: var(--surface-2);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.coverage-flagged {
+  height: 100%;
+  background: var(--danger);
+  border-radius: 999px;
+}
+
+.coverage-legend {
+  display: flex;
+  gap: var(--sp-4);
+  font-size: 11.5px;
+  margin-top: var(--sp-2);
+}
+
+.dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  margin-right: 5px;
+}
+
+.dot-flagged {
+  background: var(--danger);
+}
+
+.dot-rest {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}

@@ -9,6 +9,7 @@ import {
   type CanonicalField,
   type ColumnMap,
   type RuleConfig,
+  type UserDetail,
   type WorkerToMain,
 } from './types.ts';
 
@@ -36,6 +37,9 @@ interface State {
   lens: Lens;
   metric: MapMetric;
   drawerCountry: string | null;
+  mapFocus: string | null;          // ISO2 the map is zoomed to, null = world
+  userDetail: UserDetail | null;    // open user drill-down, null = closed
+  userLoading: string | null;       // userId currently being fetched
   openFile: (file: File | string, name: string) => void;
   setMapping: (field: CanonicalField, header: string | null) => void;
   startAnalysis: () => void;
@@ -44,10 +48,15 @@ interface State {
   setLens: (lens: Lens) => void;
   setMetric: (metric: MapMetric) => void;
   openDrawer: (iso2: string | null) => void;
+  focusCountry: (iso2: string | null) => void;
+  openUser: (userId: string) => void;
+  closeUser: () => void;
   reset: () => void;
 }
 
 let worker: Worker | null = null;
+let userWorker: Worker | null = null;
+const userCache = new Map<string, UserDetail>();
 
 export function mappingIsValid(map: ColumnMap | null): boolean {
   if (!map) return false;
@@ -70,6 +79,9 @@ export const useStore = create<State>((set, get) => ({
   lens: 'residence',
   metric: 'count',
   drawerCountry: null,
+  mapFocus: null,
+  userDetail: null,
+  userLoading: null,
 
   openFile: (file, name) => {
     set({ error: null, fileName: name, pendingFile: file });
@@ -111,7 +123,7 @@ export const useStore = create<State>((set, get) => ({
         set({ progress: { rowsParsed: msg.rowsParsed, bytesRead: msg.bytesRead, totalBytes: msg.totalBytes } });
       } else if (msg.type === 'error') {
         set({ error: msg.message, progress: null });
-      } else {
+      } else if (msg.type === 'complete') {
         set({ result: msg.result, progress: null, view: 'dashboard', drawerCountry: null });
       }
     };
@@ -127,13 +139,45 @@ export const useStore = create<State>((set, get) => ({
     set({ ruleConfig: { ...cfg, enabled: { ...cfg.enabled, [ruleId]: !cfg.enabled[ruleId] } } });
   },
 
-  setLens: (lens) => set({ lens, drawerCountry: null }),
+  setLens: (lens) => set({ lens, drawerCountry: null, mapFocus: null }),
   setMetric: (metric) => set({ metric }),
   openDrawer: (iso2) => set({ drawerCountry: iso2 }),
+
+  focusCountry: (iso2) => set({ mapFocus: iso2, drawerCountry: iso2 }),
+
+  openUser: (userId) => {
+    const cached = userCache.get(userId);
+    if (cached) {
+      set({ userDetail: cached, userLoading: null });
+      return;
+    }
+    const { pendingFile, columnMap } = get();
+    if (!pendingFile || !columnMap?.USER_ID) return;
+    set({ userLoading: userId });
+    userWorker?.terminate();
+    userWorker = new Worker(new URL('./workers/parse.worker.ts', import.meta.url), { type: 'module' });
+    userWorker.onmessage = (e: MessageEvent<WorkerToMain>) => {
+      const msg = e.data;
+      if (msg.type === 'userRows') {
+        const detail: UserDetail = { userId: msg.userId, headers: msg.headers, rows: msg.rows };
+        userCache.set(msg.userId, detail);
+        // Ignore a stale response if the user closed or clicked another id.
+        if (get().userLoading === msg.userId) set({ userDetail: detail, userLoading: null });
+      } else if (msg.type === 'error') {
+        set({ error: msg.message, userLoading: null });
+      }
+    };
+    userWorker.postMessage({ type: 'fetchUser', file: pendingFile, userIdColumn: columnMap.USER_ID, userId });
+  },
+
+  closeUser: () => set({ userDetail: null, userLoading: null }),
 
   reset: () => {
     worker?.terminate();
     worker = null;
+    userWorker?.terminate();
+    userWorker = null;
+    userCache.clear();
     set({
       view: 'landing',
       fileName: '',
@@ -148,6 +192,9 @@ export const useStore = create<State>((set, get) => ({
       lens: 'residence',
       metric: 'count',
       drawerCountry: null,
+      mapFocus: null,
+      userDetail: null,
+      userLoading: null,
     });
   },
 }));

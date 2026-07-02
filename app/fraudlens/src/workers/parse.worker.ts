@@ -207,11 +207,12 @@ function run(file: File | string, columnMap: ColumnMap) {
         const key = `${res}>${mer}`;
         let c = corridors.get(key);
         if (!c) {
-          c = { txCount: 0, userCount: 0, userIds: new Set() };
+          c = { txCount: 0, userCount: 0, fraudTxCount: 0, userIds: new Set() };
           corridors.set(key, c);
         }
         c.txCount += 1;
         c.userIds.add(userId);
+        if (isFraud) c.fraudTxCount += 1;
       }
     }
 
@@ -271,7 +272,7 @@ function run(file: File | string, columnMap: ColumnMap) {
       };
       const corridorsOut: Record<string, CorridorAgg> = {};
       for (const [key, c] of corridors) {
-        corridorsOut[key] = { txCount: c.txCount, userCount: c.userIds.size };
+        corridorsOut[key] = { txCount: c.txCount, userCount: c.userIds.size, fraudTxCount: c.fraudTxCount };
       }
       const result: AggregateResult = {
         users,
@@ -292,12 +293,34 @@ function post(msg: WorkerToMain) {
   (self as unknown as Worker).postMessage(msg);
 }
 
+// On-demand: stream the file again and keep only one user's raw rows. Memory
+// stays tiny (a single user has at most a few thousand transactions), so this
+// avoids retaining every row up front just to support the drill-down.
+function fetchUser(file: File | string, userIdColumn: string, userId: string) {
+  const rows: Record<string, string>[] = [];
+  let headers: string[] = [];
+  Papa.parse<Record<string, string>>(file as never, {
+    header: true,
+    skipEmptyLines: true,
+    chunk: (chunk) => {
+      if (headers.length === 0 && chunk.meta.fields) headers = chunk.meta.fields;
+      for (const row of chunk.data) {
+        if (row[userIdColumn] === userId) rows.push(row);
+      }
+    },
+    complete: () => post({ type: 'userRows', userId, headers, rows }),
+    error: (err: Error) => post({ type: 'error', message: err.message }),
+  });
+}
+
 self.onmessage = (e: MessageEvent<MainToWorker>) => {
-  if (e.data.type === 'parse') {
-    try {
+  try {
+    if (e.data.type === 'parse') {
       run(e.data.file, e.data.columnMap);
-    } catch (err) {
-      post({ type: 'error', message: err instanceof Error ? err.message : String(err) });
+    } else if (e.data.type === 'fetchUser') {
+      fetchUser(e.data.file, e.data.userIdColumn, e.data.userId);
     }
+  } catch (err) {
+    post({ type: 'error', message: err instanceof Error ? err.message : String(err) });
   }
 };

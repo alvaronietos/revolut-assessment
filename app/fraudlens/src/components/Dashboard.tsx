@@ -1,10 +1,12 @@
 import './Dashboard.css';
 import ChartsRow from './ChartsRow.tsx';
 import CountryDrawer from './CountryDrawer.tsx';
+import InsightsPanel from './InsightsPanel.tsx';
 import KpiRow from './KpiRow.tsx';
 import Leaderboard from './Leaderboard.tsx';
 import ModelQualityCard from './ModelQualityCard.tsx';
 import RulesPanel from './RulesPanel.tsx';
+import UserDetail from './UserDetail.tsx';
 import WorldMap from './WorldMap.tsx';
 import { fmtCount } from '../lib/format.ts';
 import { useStore } from '../store.ts';
@@ -28,7 +30,10 @@ export default function Dashboard() {
       <KpiRow />
 
       <div className="dash-main">
-        <WorldMap />
+        <div className="dash-left">
+          <WorldMap />
+          <InsightsPanel />
+        </div>
         <div className="dash-side">
           <RulesPanel />
           <ModelQualityCard />
@@ -38,6 +43,7 @@ export default function Dashboard() {
       <ChartsRow />
       <Leaderboard />
       <CountryDrawer />
+      <UserDetail />
     </div>
   );
 }

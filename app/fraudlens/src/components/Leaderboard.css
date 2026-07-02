@@ -41,6 +41,17 @@
 
 .lb-id {
   font-weight: 600;
+  background: none;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+  padding: 0;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+.lb-id:hover {
+  text-decoration: underline;
 }
 
 .lb-score {

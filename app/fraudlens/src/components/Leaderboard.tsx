@@ -13,6 +13,7 @@ type SortKey = 'score' | 'sumGbp' | 'txCount';
 export default function Leaderboard() {
   const result = useStore((s) => s.result);
   const ruleConfig = useStore((s) => s.ruleConfig);
+  const openUser = useStore((s) => s.openUser);
   const [sortKey, setSortKey] = useState<SortKey>('score');
   const [expanded, setExpanded] = useState<string | null>(null);
 
@@ -67,7 +68,18 @@ export default function Leaderboard() {
                   onClick={() => setExpanded(isOpen ? null : s.user.userId)}
                 >
                   <td className="muted num">{i + 1}</td>
-                  <td className="num lb-id" title={s.user.userId}>{s.user.userId.slice(0, 8)}…</td>
+                  <td>
+                    <button
+                      className="num lb-id"
+                      title={`${s.user.userId} — view transactions`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openUser(s.user.userId);
+                      }}
+                    >
+                      {s.user.userId.slice(0, 8)}…
+                    </button>
+                  </td>
                   <td>
                     <span className="badge lb-score num">{Math.round(s.score)}</span>
                   </td>

@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import './WorldMap.css';
 import EChart from './EChart.tsx';
 import { getDerived } from '../lib/derived.ts';
-import { CHART_COLORS, baseOption } from '../lib/echartsTheme.ts';
+import { CHART_COLORS, COUNTRY_CENTROIDS, baseOption } from '../lib/echartsTheme.ts';
 import { fmtCount, fmtGbp, fmtPct } from '../lib/format.ts';
 import { countryName } from '../lib/countries.ts';
 import { useStore, type Lens, type MapMetric } from '../store.ts';
@@ -67,6 +67,8 @@ export default function WorldMap() {
   const setLens = useStore((s) => s.setLens);
   const setMetric = useStore((s) => s.setMetric);
   const openDrawer = useStore((s) => s.openDrawer);
+  const focusCountry = useStore((s) => s.focusCountry);
+  const mapFocus = useStore((s) => s.mapFocus);
   const hasLabels = result?.totals.hasLabels ?? false;
   const hasMerchant = result?.totals.hasMerchant ?? false;
 
@@ -111,7 +113,9 @@ export default function WorldMap() {
           map: 'world',
           nameProperty: 'ISO_A2_EH',
           roam: true,
-          scaleLimit: { min: 0.8, max: 8 },
+          scaleLimit: { min: 0.8, max: 12 },
+          center: mapFocus && COUNTRY_CENTROIDS[mapFocus] ? COUNTRY_CENTROIDS[mapFocus] : undefined,
+          zoom: mapFocus && COUNTRY_CENTROIDS[mapFocus] ? 5 : 1,
           selectedMode: false,
           itemStyle: {
             areaColor: '#151A23',
@@ -127,7 +131,17 @@ export default function WorldMap() {
         },
       ],
     };
-  }, [result, ruleConfig, lens, metric]);
+  }, [result, ruleConfig, lens, metric, mapFocus]);
+
+  // Countries that have data in the current lens, for the jump-to dropdown.
+  const countryOptions = useMemo(() => {
+    if (!result) return [] as { iso2: string; name: string }[];
+    const src = lens === 'residence' ? result.residenceCountries : result.merchantCountries;
+    return [...src.keys()]
+      .filter((iso2) => COUNTRY_CENTROIDS[iso2])
+      .map((iso2) => ({ iso2, name: countryName(iso2) }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [result, lens]);
 
   if (!result) return null;
 
@@ -163,6 +177,19 @@ export default function WorldMap() {
               {metricLabels.exposure}
             </option>
           </select>
+          <select
+            className="worldmap-metric"
+            value={mapFocus ?? ''}
+            onChange={(e) => focusCountry(e.target.value || null)}
+          >
+            <option value="">Jump to country…</option>
+            {countryOptions.map((c) => (
+              <option key={c.iso2} value={c.iso2}>{c.name}</option>
+            ))}
+          </select>
+          {mapFocus && (
+            <button className="btn worldmap-reset" onClick={() => focusCountry(null)}>Reset</button>
+          )}
         </div>
       </div>
       <EChart option={option} style={{ height: 380 }} onClick={(p) => openDrawer(p.name)} />

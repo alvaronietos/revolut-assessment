@@ -111,12 +111,24 @@
   gap: var(--sp-3);
   align-items: center;
   padding: var(--sp-2) 0;
+  border: none;
   border-bottom: 1px solid var(--border);
   font-size: 13px;
+  width: 100%;
+  background: none;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+}
+
+.drawer-user:hover {
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .drawer-user-id {
   font-weight: 600;
+  color: var(--accent);
 }
 
 .drawer-score {

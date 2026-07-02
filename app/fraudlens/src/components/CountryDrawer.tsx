@@ -13,6 +13,7 @@ export default function CountryDrawer() {
   const lens = useStore((s) => s.lens);
   const iso2 = useStore((s) => s.drawerCountry);
   const openDrawer = useStore((s) => s.openDrawer);
+  const openUser = useStore((s) => s.openUser);
 
   const detail = useMemo(() => {
     if (!result || !iso2) return null;
@@ -150,12 +151,17 @@ export default function CountryDrawer() {
           <div className="card-title">Top flagged users here</div>
           {flaggedHere.length === 0 && <div className="muted">No flagged users in this country.</div>}
           {flaggedHere.slice(0, 5).map((s) => (
-            <div key={s.user.userId} className="drawer-user">
+            <button
+              key={s.user.userId}
+              className="drawer-user"
+              title={`${s.user.userId} — view transactions`}
+              onClick={() => openUser(s.user.userId)}
+            >
               <span className="num drawer-user-id">{s.user.userId.slice(0, 8)}…</span>
               <span className="muted num">{fmtCount(s.user.txCount)} tx</span>
               <span className="muted num">{fmtGbp(s.user.sumGbp)}</span>
               <span className="badge drawer-score num">{Math.round(s.score)}</span>
-            </div>
+            </button>
           ))}
         </div>
       </aside>

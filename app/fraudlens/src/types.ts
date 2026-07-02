@@ -58,6 +58,14 @@ export interface CountryAggPosted {
 export interface CorridorAgg {
   txCount: number;
   userCount: number;
+  fraudTxCount: number;
+}
+
+/** A user's raw transactions, fetched on demand for the detail view. */
+export interface UserDetail {
+  userId: string;
+  headers: string[];
+  rows: Record<string, string>[];
 }
 
 export interface Totals {
@@ -85,12 +93,15 @@ export interface AggregateResult {
   totals: Totals;
 }
 
-export type MainToWorker = { type: 'parse'; file: File | string; columnMap: ColumnMap };
+export type MainToWorker =
+  | { type: 'parse'; file: File | string; columnMap: ColumnMap }
+  | { type: 'fetchUser'; file: File | string; userIdColumn: string; userId: string };
 
 export type WorkerToMain =
   | { type: 'progress'; rowsParsed: number; bytesRead: number; totalBytes: number }
   | { type: 'error'; message: string }
-  | { type: 'complete'; result: AggregateResult };
+  | { type: 'complete'; result: AggregateResult }
+  | { type: 'userRows'; userId: string; headers: string[]; rows: Record<string, string>[] };
 
 export const RULE_IDS = [
   'MULE', 'CARD_TESTER', 'EXOTIC_CORRIDOR', 'AMOUNT_OUTLIER', 'KYC_ANOMALY', 'CONCENTRATION',
