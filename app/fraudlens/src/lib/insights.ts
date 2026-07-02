@@ -27,6 +27,7 @@ export function topCorridors(result: AggregateResult, minTx = 20, limit = 8): Co
 }
 
 export interface InOutPoint {
+  userId: string;
   moneyIn: number;
   moneyOut: number;
   flagged: boolean;
@@ -44,7 +45,7 @@ export function inOutPoints(users: Map<string, UserAgg>, flagged: Set<string>): 
     const moneyIn = u.byType.TOPUP.sumGbp;
     const moneyOut = u.byType.ATM.sumGbp + u.byType.BANK_TRANSFER.sumGbp + u.byType.P2P.sumGbp;
     if (moneyIn <= 0 && moneyOut <= 0) continue;
-    pts.push({ moneyIn, moneyOut, flagged: flagged.has(u.userId), fraud: u.fraudTxCount > 0 });
+    pts.push({ userId: u.userId, moneyIn, moneyOut, flagged: flagged.has(u.userId), fraud: u.fraudTxCount > 0 });
   }
   return pts;
 }

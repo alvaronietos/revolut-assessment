@@ -184,6 +184,8 @@ The four briefs answer the questions once. The squad's real problem is doing thi
 
 It maps any file's columns onto the fields it needs and degrades gracefully when optional ones are missing. The detection is the same logic from the briefs, turned into six explainable rules, and every flag comes with the numbers behind it rather than a black-box score. Each threshold is a slider, so an analyst can tighten or loosen a rule and watch the population re-flag instantly.
 
+Under the map I added the parts an analyst reaches for next. A corridor list ranks the residence-to-merchant routes the money actually takes, and it surfaces the Germany-to-Cyprus lane from Brief 2A without being told to look. A money-in versus cash-out plot puts the mule signature on screen: accounts that fund and withdraw in step, with no real card spend, sit on the diagonal. A coverage read-out ties detection back to pounds, so the analyst sees that the flagged population is a small share of users but a large share of the exposure. Clicking any account, on the leaderboard or in a country, opens its full transaction history and a one-glance profile of where and how it operates, and lets the analyst export that account's transactions as a CSV to hand to an investigator.
+
 <div class="fig">
 <img src="figures/app_leaderboard.png" alt="FraudLens threat leaderboard" />
 <div class="cap">The German corridor account surfaces at the top with its reasons spelled out; the £610k pending account sits far lower, as it should.</div>
@@ -204,4 +206,4 @@ I would rather be clear about the edges of this than oversell it.
 
 If I had another week: get timestamps and rebuild the mule and hit-and-run rules as real velocity checks; pull sign-up data to measure the true conversion funnel; and run the FraudLens rules forward on unlabelled months to see how many genuinely new accounts they surface. The audit tells us where we stand. The next step is watching it move.
 
-<div class="repo-note">The analysis code, figures and FraudLens source live in the accompanying repository.</div>
+<div class="repo-note">FraudLens is live at <strong>revolut-assessment.vercel.app</strong>. The analysis code, figures and full source live in the accompanying repository.</div>

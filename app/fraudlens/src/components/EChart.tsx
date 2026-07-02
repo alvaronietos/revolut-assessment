@@ -3,9 +3,16 @@ import { useEffect, useRef } from 'react';
 import { echarts } from '../lib/echartsTheme.ts';
 import type { EChartsType } from 'echarts/core';
 
+export interface ChartClick {
+  name: string;
+  dataIndex: number;
+  seriesIndex: number;
+  value: unknown;
+}
+
 interface Props {
   option: Record<string, unknown>;
-  onClick?: (params: { name: string }) => void;
+  onClick?: (params: ChartClick) => void;
   style?: React.CSSProperties;
 }
 
@@ -20,7 +27,14 @@ export default function EChart({ option, onClick, style }: Props) {
     const el = ref.current!;
     const chart = echarts.init(el);
     chartRef.current = chart;
-    chart.on('click', (params) => clickRef.current?.(params as { name: string }));
+    chart.on('click', (p) =>
+      clickRef.current?.({
+        name: (p as { name: string }).name,
+        dataIndex: (p as { dataIndex: number }).dataIndex,
+        seriesIndex: (p as { seriesIndex: number }).seriesIndex,
+        value: (p as { value: unknown }).value,
+      }),
+    );
     const ro = new ResizeObserver(() => chart.resize());
     ro.observe(el);
     return () => {

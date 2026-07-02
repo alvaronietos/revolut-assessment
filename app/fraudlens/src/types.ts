@@ -68,6 +68,27 @@ export interface UserDetail {
   rows: Record<string, string>[];
 }
 
+/** Predicate for an on-demand re-read of the file. */
+export type FilterSpec =
+  | { kind: 'user'; userId: string }
+  | { kind: 'type'; txType: string }
+  | { kind: 'amount'; min: number; max: number; label: string }; // GBP, [min, max)
+
+/** Result of a filtered re-read: a capped preview plus the true total. */
+export interface FilteredResult {
+  spec: FilterSpec;
+  headers: string[];
+  rows: Record<string, string>[];
+  total: number;
+  capped: boolean;
+}
+
+/** One level of the drill-down modal's view stack. */
+export type DrillView =
+  | { kind: 'profile'; userId: string }
+  | { kind: 'txList'; spec: FilterSpec; title: string }
+  | { kind: 'userList'; ids: string[]; title: string };
+
 export interface Totals {
   rows: number;
   users: number;
@@ -95,13 +116,15 @@ export interface AggregateResult {
 
 export type MainToWorker =
   | { type: 'parse'; file: File | string; columnMap: ColumnMap }
-  | { type: 'fetchUser'; file: File | string; userIdColumn: string; userId: string };
+  | { type: 'fetchFiltered'; file: File | string; columnMap: ColumnMap; spec: FilterSpec; cap: number }
+  | { type: 'exportFiltered'; file: File | string; columnMap: ColumnMap; spec: FilterSpec };
 
 export type WorkerToMain =
   | { type: 'progress'; rowsParsed: number; bytesRead: number; totalBytes: number }
   | { type: 'error'; message: string }
   | { type: 'complete'; result: AggregateResult }
-  | { type: 'userRows'; userId: string; headers: string[]; rows: Record<string, string>[] };
+  | { type: 'filteredRows'; spec: FilterSpec; headers: string[]; rows: Record<string, string>[]; total: number; capped: boolean }
+  | { type: 'exportReady'; csv: string; filename: string };
 
 export const RULE_IDS = [
   'MULE', 'CARD_TESTER', 'EXOTIC_CORRIDOR', 'AMOUNT_OUTLIER', 'KYC_ANOMALY', 'CONCENTRATION',

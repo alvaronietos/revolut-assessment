@@ -13,6 +13,7 @@ import {
   type ColumnMap,
   type CorridorAgg,
   type CountryAggPosted,
+  type FilterSpec,
   type MainToWorker,
   type Totals,
   type TxType,
@@ -293,22 +294,69 @@ function post(msg: WorkerToMain) {
   (self as unknown as Worker).postMessage(msg);
 }
 
-// On-demand: stream the file again and keep only one user's raw rows. Memory
-// stays tiny (a single user has at most a few thousand transactions), so this
-// avoids retaining every row up front just to support the drill-down.
-function fetchUser(file: File | string, userIdColumn: string, userId: string) {
+// Row predicate for an on-demand re-read. Amount filtering needs the GBP value,
+// so it reuses the same FX conversion as the main aggregation pass.
+function makeMatcher(columnMap: ColumnMap, spec: FilterSpec): (row: Record<string, string>) => boolean {
+  if (spec.kind === 'user') {
+    const col = columnMap.USER_ID!;
+    return (row) => row[col] === spec.userId;
+  }
+  if (spec.kind === 'type') {
+    const col = columnMap.TYPE!;
+    return (row) => normalizeType(row[col]) === spec.txType;
+  }
+  const amtCol = columnMap.AMOUNT!;
+  const curCol = columnMap.CURRENCY!;
+  return (row) => {
+    const gbp = toGbp(Number(row[amtCol]), (row[curCol] ?? '').toUpperCase().trim());
+    return gbp !== null && gbp >= spec.min && gbp < spec.max;
+  };
+}
+
+// Stream the file again and keep only rows matching the spec, up to `cap`
+// (memory stays bounded even when the match is huge, e.g. all card payments).
+function fetchFiltered(file: File | string, columnMap: ColumnMap, spec: FilterSpec, cap: number) {
+  const match = makeMatcher(columnMap, spec);
   const rows: Record<string, string>[] = [];
   let headers: string[] = [];
+  let total = 0;
   Papa.parse<Record<string, string>>(file as never, {
     header: true,
     skipEmptyLines: true,
     chunk: (chunk) => {
       if (headers.length === 0 && chunk.meta.fields) headers = chunk.meta.fields;
       for (const row of chunk.data) {
-        if (row[userIdColumn] === userId) rows.push(row);
+        if (match(row)) {
+          total += 1;
+          if (rows.length < cap) rows.push(row);
+        }
       }
     },
-    complete: () => post({ type: 'userRows', userId, headers, rows }),
+    complete: () => post({ type: 'filteredRows', spec, headers, rows, total, capped: total > cap }),
+    error: (err: Error) => post({ type: 'error', message: err.message }),
+  });
+}
+
+// Build the full CSV for a filter, streaming matches into one string so the
+// rows never accumulate as JS objects.
+function exportFiltered(file: File | string, columnMap: ColumnMap, spec: FilterSpec, filename: string) {
+  const match = makeMatcher(columnMap, spec);
+  const parts: string[] = [];
+  let headers: string[] = [];
+  Papa.parse<Record<string, string>>(file as never, {
+    header: true,
+    skipEmptyLines: true,
+    chunk: (chunk) => {
+      if (headers.length === 0 && chunk.meta.fields) {
+        headers = chunk.meta.fields;
+        parts.push(Papa.unparse([headers]));
+      }
+      const matched = chunk.data.filter(match);
+      if (matched.length > 0) {
+        parts.push(Papa.unparse(matched, { header: false, columns: headers }));
+      }
+    },
+    complete: () => post({ type: 'exportReady', csv: parts.join('\n'), filename }),
     error: (err: Error) => post({ type: 'error', message: err.message }),
   });
 }
@@ -317,8 +365,14 @@ self.onmessage = (e: MessageEvent<MainToWorker>) => {
   try {
     if (e.data.type === 'parse') {
       run(e.data.file, e.data.columnMap);
-    } else if (e.data.type === 'fetchUser') {
-      fetchUser(e.data.file, e.data.userIdColumn, e.data.userId);
+    } else if (e.data.type === 'fetchFiltered') {
+      fetchFiltered(e.data.file, e.data.columnMap, e.data.spec, e.data.cap);
+    } else if (e.data.type === 'exportFiltered') {
+      const spec = e.data.spec;
+      const name = spec.kind === 'user' ? `user_${spec.userId.slice(0, 8)}`
+        : spec.kind === 'type' ? `type_${spec.txType}`
+        : `amount_${Math.round(spec.min)}-${Math.round(spec.max)}`;
+      exportFiltered(e.data.file, e.data.columnMap, spec, `${name}_transactions.csv`);
     }
   } catch (err) {
     post({ type: 'error', message: err instanceof Error ? err.message : String(err) });

@@ -4,6 +4,9 @@ Audit of a transaction dataset (688,651 transactions, 8,021 users) answering
 four business questions, plus **FraudLens**, an in-browser tool that runs the
 same detection logic on any transactions CSV.
 
+**FraudLens is live at https://revolut-assessment.vercel.app/** — drop in a CSV
+or click "Try the demo dataset".
+
 The written report with the findings and charts is in
 [`report/report.pdf`](report/report.pdf).
 

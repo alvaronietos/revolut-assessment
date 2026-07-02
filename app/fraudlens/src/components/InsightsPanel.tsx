@@ -27,6 +27,7 @@ const AXIS = {
 export default function InsightsPanel() {
   const result = useStore((s) => s.result);
   const ruleConfig = useStore((s) => s.ruleConfig);
+  const openUser = useStore((s) => s.openUser);
 
   const data = useMemo(() => {
     if (!result) return null;
@@ -43,15 +44,15 @@ export default function InsightsPanel() {
 
   const inOutOption = useMemo(() => {
     if (!data) return {};
-    const clean = data.points.filter((p) => !p.flagged).map((p) => [Math.max(1, p.moneyIn), Math.max(1, p.moneyOut)]);
-    const flag = data.points.filter((p) => p.flagged).map((p) => [Math.max(1, p.moneyIn), Math.max(1, p.moneyOut)]);
+    const clean = data.points.filter((p) => !p.flagged).map((p) => [Math.max(1, p.moneyIn), Math.max(1, p.moneyOut), p.userId]);
+    const flag = data.points.filter((p) => p.flagged).map((p) => [Math.max(1, p.moneyIn), Math.max(1, p.moneyOut), p.userId]);
     return {
       ...baseOption(),
       grid: { left: 8, right: 12, top: 10, bottom: 8, containLabel: true },
       tooltip: {
         ...baseOption().tooltip,
-        formatter: (p: { value: [number, number] }) =>
-          `In ${fmtGbp(p.value[0])}<br/>Out ${fmtGbp(p.value[1])}`,
+        formatter: (p: { value: [number, number, string] }) =>
+          `${p.value[2].slice(0, 8)}…<br/>In ${fmtGbp(p.value[0])}<br/>Out ${fmtGbp(p.value[1])}`,
       },
       xAxis: { type: 'log', name: 'money in', nameGap: 18, nameTextStyle: { color: CHART_COLORS.dim, fontSize: 10 }, ...AXIS },
       yAxis: { type: 'log', name: 'cash / transfer out', nameTextStyle: { color: CHART_COLORS.dim, fontSize: 10 }, ...AXIS },
@@ -92,8 +93,15 @@ export default function InsightsPanel() {
 
         {/* B — money in vs out */}
         <div className="insights-cell">
-          <div className="card-title">Money in vs cash-out (mule signature)</div>
-          <EChart option={inOutOption} style={{ height: 180 }} />
+          <div className="card-title">Money in vs cash-out (mule signature) <span className="chart-hint">· click a point</span></div>
+          <EChart
+            option={inOutOption}
+            style={{ height: 180 }}
+            onClick={(c) => {
+              const id = Array.isArray(c.value) ? (c.value as unknown[])[2] : undefined;
+              if (typeof id === 'string') openUser(id);
+            }}
+          />
           <div className="muted insights-note">
             Red = flagged. Accounts high on both axes move funds straight back out.
           </div>
