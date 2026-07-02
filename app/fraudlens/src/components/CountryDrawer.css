@@ -1,0 +1,125 @@
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 14, 20, 0.5);
+  z-index: 40;
+}
+
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(400px, 92vw);
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  box-shadow: var(--shadow-drawer);
+  z-index: 50;
+  padding: var(--sp-5);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+  animation: drawer-in 0.18s ease;
+}
+
+@keyframes drawer-in {
+  from {
+    transform: translateX(24px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.drawer-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.drawer-head h3 {
+  font-size: 22px;
+  letter-spacing: -0.02em;
+}
+
+.drawer-close {
+  padding: 6px 10px;
+}
+
+.drawer-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-3) var(--sp-4);
+}
+
+.drawer-stats > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.drawer-stats strong {
+  font-size: 18px;
+}
+
+.drawer-alert {
+  background: var(--danger-soft);
+  border: 1px solid rgba(255, 77, 94, 0.3);
+  color: var(--text);
+  border-radius: var(--r-md);
+  padding: var(--sp-3) var(--sp-4);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.drawer-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.drawer-bar-row {
+  display: grid;
+  grid-template-columns: 110px 1fr 56px;
+  gap: var(--sp-3);
+  align-items: center;
+  font-size: 12.5px;
+}
+
+.drawer-bar-label {
+  text-transform: capitalize;
+}
+
+.drawer-bar {
+  height: 8px;
+  background: var(--surface-2);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.drawer-bar-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 999px;
+}
+
+.drawer-user {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  gap: var(--sp-3);
+  align-items: center;
+  padding: var(--sp-2) 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+
+.drawer-user-id {
+  font-weight: 600;
+}
+
+.drawer-score {
+  background: var(--danger-soft);
+  color: var(--danger);
+}

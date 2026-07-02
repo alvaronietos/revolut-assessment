@@ -1,0 +1,95 @@
+.mapping {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: var(--sp-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+
+.mapping-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--sp-4);
+}
+
+.mapping-head h2 {
+  font-size: 26px;
+  letter-spacing: -0.02em;
+}
+
+.mapping-head p {
+  max-width: 560px;
+}
+
+.mapping-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--sp-4);
+}
+
+.mapping-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  padding: var(--sp-4);
+}
+
+.mapping-label {
+  font-weight: 650;
+  font-size: 13px;
+}
+
+.mapping-req {
+  color: var(--accent);
+  margin-left: 2px;
+}
+
+.mapping-desc {
+  font-size: 12px;
+  min-height: 2.6em;
+}
+
+.mapping-field select {
+  background: var(--surface-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 8px 10px;
+  font-family: inherit;
+  font-size: 13px;
+}
+
+.mapping-preview {
+  overflow-x: auto;
+}
+
+.mapping-preview table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 12px;
+}
+
+.mapping-preview th,
+.mapping-preview td {
+  text-align: left;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mapping-preview th {
+  color: var(--text-dim);
+  font-weight: 600;
+}
+
+.mapping-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--sp-4);
+}

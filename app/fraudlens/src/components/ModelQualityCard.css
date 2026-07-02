@@ -1,0 +1,65 @@
+.mq {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+.mq-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-3);
+}
+
+.mq-stats > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.mq-stats strong {
+  font-size: 20px;
+}
+
+.mq-grid {
+  display: grid;
+  grid-template-columns: auto 1fr 1fr;
+  gap: 4px;
+  font-size: 12.5px;
+}
+
+.mq-cell {
+  padding: 7px 10px;
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+  text-align: center;
+}
+
+.mq-head {
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mq-tp {
+  background: rgba(45, 212, 167, 0.15);
+  color: var(--ok);
+}
+
+.mq-fn {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.mq-fp {
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+
+.mq-note {
+  font-size: 12px;
+  line-height: 1.5;
+}

@@ -1,0 +1,35 @@
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sp-4);
+  position: relative;
+}
+
+.kpi-tile {
+  padding: var(--sp-4) var(--sp-5);
+}
+
+.kpi-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.kpi-value {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-top: var(--sp-1);
+}
+
+.kpi-danger {
+  color: var(--danger);
+}
+
+.kpi-footnote {
+  grid-column: 1 / -1;
+  font-size: 12px;
+  margin-top: calc(-1 * var(--sp-2));
+}

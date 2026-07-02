@@ -1,0 +1,29 @@
+/* Design tokens. Dark theme only: cards over a near-black canvas, hairline
+   borders instead of shadows, one blue accent, red reserved for threat. */
+:root {
+  --bg: #0B0E14;
+  --surface: #151A23;
+  --surface-2: #1C2330;
+  --border: rgba(255, 255, 255, 0.08);
+  --text: #F4F6FB;
+  --text-dim: #8B93A7;
+  --accent: #4F7CFF;
+  --accent-soft: rgba(79, 124, 255, 0.15);
+  --danger: #FF4D5E;
+  --danger-soft: rgba(255, 77, 94, 0.15);
+  --warn: #FFB020;
+  --warn-soft: rgba(255, 176, 32, 0.15);
+  --ok: #2DD4A7;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --shadow-drawer: 0 8px 32px rgba(0, 0, 0, 0.45);
+  --font: 'Inter Variable', -apple-system, 'Segoe UI', Roboto, sans-serif;
+}

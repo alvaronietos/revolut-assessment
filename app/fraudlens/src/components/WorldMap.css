@@ -1,0 +1,63 @@
+.worldmap {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.worldmap-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+}
+
+.worldmap-controls {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: center;
+}
+
+.seg {
+  display: inline-flex;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 3px;
+}
+
+.seg button {
+  border: none;
+  background: transparent;
+  color: var(--text-dim);
+  padding: 6px 12px;
+  border-radius: calc(var(--r-md) - 4px);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.seg button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.seg .seg-on {
+  background: var(--accent);
+  color: var(--text);
+}
+
+.worldmap-metric {
+  background: var(--surface-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 7px 10px;
+  font-family: inherit;
+  font-size: 12.5px;
+}
+
+.worldmap-note {
+  font-size: 11.5px;
+  margin-top: var(--sp-2);
+}

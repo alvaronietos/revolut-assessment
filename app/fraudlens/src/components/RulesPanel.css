@@ -1,0 +1,53 @@
+.rules {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+.rules-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.rules-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: 7px 0;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.rules-item input {
+  accent-color: var(--accent);
+}
+
+.rules-name {
+  flex: 1;
+  font-weight: 550;
+}
+
+.rules-sliders {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.rules-slider-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 2px;
+}
+
+.rules-value {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.rules-slider input[type='range'] {
+  width: 100%;
+  accent-color: var(--accent);
+}

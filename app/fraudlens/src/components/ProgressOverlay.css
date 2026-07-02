@@ -1,0 +1,31 @@
+.progress-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 14, 20, 0.82);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  backdrop-filter: blur(4px);
+}
+
+.progress-card {
+  width: min(420px, 90vw);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.progress-bar {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent);
+  transition: width 0.2s ease;
+}

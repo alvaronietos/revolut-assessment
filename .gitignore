@@ -1,0 +1,14 @@
+data/
+*.csv
+!app/fraudlens/public/sample_transactions.csv
+node_modules/
+dist/
+*.tsbuildinfo
+*.log
+.venv/
+__pycache__/
+.ipynb_checkpoints/
+.DS_Store
+
+report/report.html
+report/report.raw.pdf

@@ -1,0 +1,26 @@
+.charts-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sp-4);
+}
+
+@media (max-width: 1100px) {
+  .charts-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.chart-card {
+  padding: var(--sp-4) var(--sp-5);
+  min-width: 0;
+}
+
+.chart-empty {
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed var(--border);
+  border-radius: var(--r-md);
+  font-size: 13px;
+}
