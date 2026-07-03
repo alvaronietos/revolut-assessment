@@ -25,7 +25,7 @@ Five things I would want the FC squad to walk away with:
 
 - **The five accounts I would put on the Head of Risk's desk are not the five biggest thieves.** The single largest loss, £610k, comes from an account that never passed KYC, so our existing gate already flags that profile. I ranked instead by who beat our controls and stayed operational.
 
-The interactive tool, **FraudLens**, packages the detection logic behind these findings so an analyst can load a CSV and see the same picture in seconds. It runs entirely in the browser, so no transaction data has to leave the machine.
+The last piece of this submission is not another chart. Everything above, recomputing conversion, ranking countries by risk, profiling the KYC-passed fraudsters, scoring the worst accounts, is work the FC squad will have to repeat on next month's file, and the month after. Rather than leave it as a notebook only I can rerun, I turned the whole method into a reusable web app: drop in any transactions CSV and it reproduces this exact analysis in seconds, so the same risky-user identification runs on any dataset in one fast, consistent pass instead of a bespoke study each time. I called it **FraudLens**. It runs entirely in the browser, so no transaction data leaves the machine, and it is live at [revolut-assessment.vercel.app](https://revolut-assessment.vercel.app/) with the source at [github.com/alvaronietos/revolut-assessment](https://github.com/alvaronietos/revolut-assessment).
 
 <div class="pb"></div>
 
@@ -175,7 +175,7 @@ One honesty note on framing. The fraud tag marks a transaction, not a person. An
 
 ## FraudLens — the net, not just the audit
 
-The four briefs answer the questions once. The squad's real problem is doing this again next month, on the next dataset, without re-running a notebook. So I built **FraudLens**: a single-page tool where an analyst drops in a transactions CSV and gets the same view I worked from. It runs entirely in the browser, which matters for financial data — nothing is uploaded anywhere.
+The four briefs answer the questions once. The squad's real problem is doing this again next month, on the next dataset, without re-running a notebook. The point of building a tool is to make the analysis automatable: one consistent pipeline that ingests any transactions file and identifies the risky users the same way every time, instead of a fresh hand-built study whenever new data lands. That is what **FraudLens** is, a single-page tool where an analyst drops in a transactions CSV and gets the same view I worked from. It runs entirely in the browser, which matters for financial data, nothing is uploaded anywhere. It is live at [revolut-assessment.vercel.app](https://revolut-assessment.vercel.app/), and the code is at [github.com/alvaronietos/revolut-assessment](https://github.com/alvaronietos/revolut-assessment).
 
 <div class="fig">
 <img src="figures/app_dashboard.png" alt="FraudLens dashboard" />
@@ -206,4 +206,4 @@ I would rather be clear about the edges of this than oversell it.
 
 If I had another week: get timestamps and rebuild the mule and hit-and-run rules as real velocity checks; pull sign-up data to measure the true conversion funnel; and run the FraudLens rules forward on unlabelled months to see how many genuinely new accounts they surface. The audit tells us where we stand. The next step is watching it move.
 
-<div class="repo-note">FraudLens is live at <strong>revolut-assessment.vercel.app</strong>. The analysis code, figures and full source live in the accompanying repository.</div>
+<div class="repo-note"><strong>Live tool:</strong> <a href="https://revolut-assessment.vercel.app/">revolut-assessment.vercel.app</a> &nbsp;·&nbsp; <strong>Source code, analysis and figures:</strong> <a href="https://github.com/alvaronietos/revolut-assessment">github.com/alvaronietos/revolut-assessment</a></div>
